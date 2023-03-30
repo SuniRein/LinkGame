@@ -5,10 +5,14 @@
 #include "key_processer.h"
 #include "command_processer.h"
 
-#include "../game_engine/map.h"
-#include "../game_engine/unit_renderer.h"
+#include "game_engine/map.h"
+#include "game_engine/unit_renderer.h"
+
+#include "imgui.h"
+#include "imgui_stdlib.h"
 
 #include <tuple>
+#include <string>
 
 namespace game {
 
@@ -36,7 +40,10 @@ link_game::link_game(int unit_count_x, int unit_count_y, gl::window& window) {
 
 link_game::~link_game() {}
 
-std::unique_ptr<link_game::map_generator> link_game::generator = std::make_unique<link_game::map_generator>();
+std::unique_ptr<link_game::map_generator> link_game::generator = 
+  std::make_unique<link_game::map_generator>();
+std::unique_ptr<link_game::command_processer> link_game::terminal =
+  std::make_unique<link_game::command_processer>();
 
 void link_game::init(int unit_count_x, int unit_count_y, gl::window& window) {
   m_game_state = game_state_t::running;
@@ -49,8 +56,7 @@ void link_game::init(int unit_count_x, int unit_count_y, gl::window& window) {
 
   m_renderer = std::make_unique<game_engine::unit_renderer>(m_map->get_size() + 1, m_map->generate_vertex_buffer_layout());
   m_clicker = std::make_unique<mouse_button_processer>(*this);
-  m_key_processer = nullptr;;
-  m_command_processer = nullptr;
+  m_key_processer = std::make_unique<key_processer>(*this);
 }
 
 void link_game::release() {
@@ -62,7 +68,6 @@ void link_game::release() {
 
   m_clicker.release();
   m_key_processer.release();
-  m_command_processer.release();
 }
 
 void link_game::on_update() {
@@ -84,10 +89,41 @@ void link_game::on_update() {
 }
 
 void link_game::on_render() {
-  if(m_game_state == game_state_t::running) {
+  if(m_game_state == game_state_t::running || m_game_state == game_state_t::waiting) {
     m_renderer->set_uniform("u_MVP", m_map->projection());
     m_renderer->draw(m_map->get_size() + m_actived_pos.has_value());
   }
 }
+
+void link_game::on_ImGui_render() {
+  if(m_game_state == game_state_t::waiting) {
+    ImGui::Begin("Link Game Control");
+
+    static std::string command;
+    command.reserve(100);
+    ImGui::InputTextWithHint("Command", "Enter your command.", &command);
+
+    if(ImGui::Button("Run Command")) {
+      terminal->run_command(*this, command);
+    }
+
+    ImGui::Text("%s", terminal->command_output());
+
+    if(ImGui::Button("Exit Control Mode")) {
+      m_game_state = game_state_t::running;
+    }
+
+    if(ImGui::Button("Terminate")) {
+      m_window->set_should_close(true);
+      release();
+    }
+
+    auto& io = ImGui::GetIO();
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+    ImGui::End();
+  }
+}
+
 
 }

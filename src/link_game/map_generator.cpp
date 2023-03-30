@@ -1,7 +1,7 @@
 #include "map_generator.h"
 
-#include "../kit/random.h"
-#include "../kit/random_pool.h"
+#include "kit/random.h"
+#include "kit/random_pool.h"
 
 #include <set>
 

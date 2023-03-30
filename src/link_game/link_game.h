@@ -6,7 +6,7 @@
 
 #include "openGL_cpp.h"
 
-#include "../game_engine/map.h"
+#include "game_engine/map.h"
 
 namespace game_engine {
   class unit_renderer;
@@ -33,6 +33,7 @@ public:
 
   void on_update();
   void on_render();
+  void on_ImGui_render();
 
   int get_count_x() const {  return m_map->get_count_x();  }
   int get_count_y() const {  return m_map->get_count_y();  }
@@ -60,7 +61,7 @@ private:
   class map_generator;          static std::unique_ptr<map_generator> generator;
   class mouse_button_processer; std::unique_ptr<mouse_button_processer> m_clicker;
   class key_processer;          std::unique_ptr<key_processer> m_key_processer;
-  class command_processer;      std::unique_ptr<command_processer> m_command_processer;
+  class command_processer;      static std::unique_ptr<command_processer> terminal;
 };
 
 }

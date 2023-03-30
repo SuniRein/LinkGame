@@ -23,14 +23,16 @@ link_game::mouse_button_processer::~mouse_button_processer() {
 void link_game::mouse_button_processer::mouse_button_callback
   (gl::window& window, gl::mouse_button_token button, gl::mouse_button_action action, int) 
 {
-  if(button == gl::mouse_button_token::button_left && action == gl::mouse_button_action::press) {
-    auto [x, y] = window.get_cursor_pos(); 
-    auto [width, height] = window.get_size();
-    pos_t unit_pos = {
-      static_cast<int>(x) / (width / m_game.m_map->get_count_x()),
-      static_cast<int>(height - y) / (height / m_game.m_map->get_count_y())
-    };
-    active_pos(unit_pos);
+  if(m_game.m_game_state == link_game::game_state_t::running) {
+    if(button == gl::mouse_button_token::button_left && action == gl::mouse_button_action::press) {
+      auto [x, y] = window.get_cursor_pos(); 
+      auto [width, height] = window.get_size();
+      pos_t unit_pos = {
+        static_cast<int>(x) / (width / m_game.m_map->get_count_x()),
+        static_cast<int>(height - y) / (height / m_game.m_map->get_count_y())
+      };
+      active_pos(unit_pos);
+    }
   }
 }
 

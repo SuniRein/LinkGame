@@ -15,11 +15,14 @@ project(link_game LANGUAGES CXX C)
 FILE(GLOB_RECURSE   PIXEL_FILES   
                     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
                     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
+                    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ImGui/src/*.cpp
                     )
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.16)
     set(CMAKE_UNITY_BUILD_BATCH_SIZE 16) # 10 ～ 20
 endif()
+
+#add_compile_definitions(IMGUI_IMPL_OPENGL_DEBUG)
 
 add_executable(${PROJECT_NAME} ${PIXEL_FILES})
 
@@ -32,7 +35,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
     # === 第三方库 ===
     /home/sunirein/Desktop/OpenGL-cpp/include
-
+    ${PROJECT_SOURCE_DIR}/deps/ImGui/include
+    
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     )
 

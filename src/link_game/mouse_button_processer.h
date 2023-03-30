@@ -4,6 +4,7 @@ namespace game {
 
 class link_game::mouse_button_processer {
 public:
+  mouse_button_processer() = delete;
   mouse_button_processer(link_game& game);
   ~mouse_button_processer();
 
